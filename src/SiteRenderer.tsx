@@ -15,6 +15,7 @@ export class SiteRenderer {
 
     static APPLICATION_SCRIPT_PATH = "/scripts/app.js";
     static DEFAULT_HEAD_CONTENT = [];
+    static USER_CONTEXT:React.Context<UserContextProps> = React.createContext<UserContextProps>({currentUserID: null, currentUsername: null});
 
     static registerClientPageLoaderCallback(clientPageLoaderCallback: PageLoaderCallback) {
         if (Utils.isClient()) {
@@ -78,11 +79,9 @@ if(window._initSite)
             return pageComponent;
         }
 
-        const userContext = React.createContext(userContextProps);
-
-        return <userContext.Provider value={userContextProps}>
+        return <SiteRenderer.USER_CONTEXT.Provider value={userContextProps}>
             {pageComponent}
-        </userContext.Provider>;
+        </SiteRenderer.USER_CONTEXT.Provider>;
     }
 
     private static async _clientSideRender(pageName: string,

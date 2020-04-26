@@ -51,8 +51,7 @@ if(window._initSite)
         if (!userContextProps) {
             return pageComponent;
         }
-        const userContext = react_1.default.createContext(userContextProps);
-        return react_1.default.createElement(userContext.Provider, { value: userContextProps }, pageComponent);
+        return react_1.default.createElement(SiteRenderer.USER_CONTEXT.Provider, { value: userContextProps }, pageComponent);
     }
     static async _clientSideRender(pageName, pageComponentProps, userContextProps) {
         const pageComponentType = await window._pageLoaderCallback(pageName);
@@ -74,4 +73,5 @@ if(window._initSite)
 exports.SiteRenderer = SiteRenderer;
 SiteRenderer.APPLICATION_SCRIPT_PATH = "/scripts/app.js";
 SiteRenderer.DEFAULT_HEAD_CONTENT = [];
+SiteRenderer.USER_CONTEXT = react_1.default.createContext({ currentUserID: null, currentUsername: null });
 //# sourceMappingURL=SiteRenderer.js.map
