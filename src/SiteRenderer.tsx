@@ -42,6 +42,8 @@ export class SiteRenderer {
         headContent: string | string[] = SiteRenderer.DEFAULT_HEAD_CONTENT
     ) {
 
+        uiContextProps = defaults({}, uiContextProps, SiteConfig);
+
         const pageComponentType = await serverPageLoaderCallback(pageName);
         const pageContent = await SiteRenderer._serverSideRender(pageComponentType, pageComponentProps, req, res, uiContextProps);
 
@@ -108,9 +110,7 @@ if(window._initSite)
     private static async _serverSideRender(pageComponentType: React.ComponentClass,
                                            pageComponentProps: object,
                                            req: any, res: any,
-                                           uiContextProps?: UIContextProps): Promise<string> {
-
-        uiContextProps = defaults({}, uiContextProps, SiteConfig);
+                                           uiContextProps: UIContextProps): Promise<string> {
 
         const ReactDOMServer = require("react-dom/server");
         const StaticRouter = require("react-router-dom").StaticRouter;

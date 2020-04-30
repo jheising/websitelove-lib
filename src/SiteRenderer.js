@@ -18,6 +18,7 @@ class SiteRenderer {
         }
     }
     static async renderServerPage(pageName, serverPageLoaderCallback, pageComponentProps, req, res, uiContextProps, headContent = SiteRenderer.DEFAULT_HEAD_CONTENT) {
+        uiContextProps = defaults_1.default({}, uiContextProps, SiteConfig_1.SiteConfig);
         const pageComponentType = await serverPageLoaderCallback(pageName);
         const pageContent = await SiteRenderer._serverSideRender(pageComponentType, pageComponentProps, req, res, uiContextProps);
         if (!pageContent) {
@@ -62,7 +63,6 @@ if(window._initSite)
         react_dom_1.default.hydrate(react_1.default.createElement(react_router_dom_1.BrowserRouter, null, SiteRenderer._createPageComponent(pageComponentType, pageComponentProps, uiContextProps)), document.getElementById("root"));
     }
     static async _serverSideRender(pageComponentType, pageComponentProps, req, res, uiContextProps) {
-        uiContextProps = defaults_1.default({}, uiContextProps, SiteConfig_1.SiteConfig);
         const ReactDOMServer = require("react-dom/server");
         const StaticRouter = require("react-router-dom").StaticRouter;
         const routerContext = {};
