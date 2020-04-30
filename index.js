@@ -8,4 +8,6 @@ const SiteConfig_1 = require("./src/SiteConfig");
 exports.SiteConfig = SiteConfig_1.SiteConfig;
 const UIUtils_1 = require("./src/ui/UIUtils");
 exports.UIUtils = UIUtils_1.UIUtils;
+const APIClient_1 = require("./src/network/APIClient");
+exports.APIClient = APIClient_1.APIClient;
 //# sourceMappingURL=index.js.map

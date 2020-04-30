@@ -8,6 +8,7 @@ import {SiteConfig} from "../SiteConfig";
 let _fetch = Utils.isServer() ? require("node-fetch-polyfill") : (window as any).fetch;
 
 export interface APIClientRequestOptions extends RequestInit {
+    apiBaseURL?: string;
     queryParams?: object;
     body?: any;
     headers?: any;
@@ -37,13 +38,14 @@ export class APIClient {
         return url.href;
     }
 
-    static async makeAPICall(method:string, endpoint: string, requestOptions?: APIClientRequestOptions): Promise<any> {
+    static async makeAPICall(method: string, endpoint: string, requestOptions?: APIClientRequestOptions): Promise<any> {
 
         requestOptions = defaults({}, requestOptions, {
             timeoutInMS: 10000,
             headers: {},
             credentials: "include",
-            cache: "no-store"
+            cache: "no-store",
+            apiBaseURL: SiteConfig.apiBaseURL
         });
 
         if (requestOptions.method !== "GET" && isObjectLike(requestOptions.body)) {
@@ -58,7 +60,7 @@ export class APIClient {
         }, requestOptions.timeoutInMS);
 
         let response;
-        let fullURL = APIClient.createFullURLWithQueryParams(SiteConfig.apiBaseURL + endpoint, requestOptions.queryParams);
+        let fullURL = APIClient.createFullURLWithQueryParams(requestOptions.apiBaseURL + endpoint, requestOptions.queryParams);
 
         try {
             response = await _fetch(fullURL, requestOptions);
@@ -84,8 +86,7 @@ export class APIClient {
             throw responseData;
         }
 
-        if(responseData.this === "succeeded")
-        {
+        if (responseData.this === "succeeded") {
             return responseData.with;
         }
 

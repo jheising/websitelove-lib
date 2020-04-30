@@ -32,7 +32,8 @@ class APIClient {
             timeoutInMS: 10000,
             headers: {},
             credentials: "include",
-            cache: "no-store"
+            cache: "no-store",
+            apiBaseURL: SiteConfig_1.SiteConfig.apiBaseURL
         });
         if (requestOptions.method !== "GET" && isObjectLike_1.default(requestOptions.body)) {
             requestOptions.headers["Content-Type"] = "application/json";
@@ -44,7 +45,7 @@ class APIClient {
             throw new Error("Request timed out");
         }, requestOptions.timeoutInMS);
         let response;
-        let fullURL = APIClient.createFullURLWithQueryParams(SiteConfig_1.SiteConfig.apiBaseURL + endpoint, requestOptions.queryParams);
+        let fullURL = APIClient.createFullURLWithQueryParams(requestOptions.apiBaseURL + endpoint, requestOptions.queryParams);
         try {
             response = await _fetch(fullURL, requestOptions);
         }
