@@ -11,9 +11,6 @@ const castArray_1 = __importDefault(require("lodash/castArray"));
 const defaults_1 = __importDefault(require("lodash/defaults"));
 const SiteConfig_1 = require("./SiteConfig");
 class SiteRenderer {
-    static requireFromCDN(relativeURL) {
-        return SiteConfig_1.SiteConfig.cdnBaseURL + relativeURL;
-    }
     static registerClientPageLoaderCallback(clientPageLoaderCallback) {
         if (Utils_1.Utils.isClient()) {
             window._pageLoaderCallback = clientPageLoaderCallback;

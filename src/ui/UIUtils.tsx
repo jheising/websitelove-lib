@@ -5,6 +5,7 @@ import toPath from "lodash/toPath";
 import cloneDeep from "lodash/cloneDeep";
 import isArray from "lodash/isArray";
 import debounce from "lodash/debounce";
+import {SiteConfig} from "../SiteConfig";
 
 export type PathAndValue = [string | string[], any];
 
@@ -86,5 +87,9 @@ export class UIUtils {
                 }
             }
         };
+    }
+
+    static requireFromCDN(relativeURL: string) {
+        return SiteConfig.cdnBaseURL + relativeURL;
     }
 }

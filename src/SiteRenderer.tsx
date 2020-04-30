@@ -25,10 +25,6 @@ export class SiteRenderer {
         currentUsername: null
     });
 
-    static requireFromCDN(relativeURL: string) {
-        return SiteConfig.cdnBaseURL + relativeURL;
-    }
-
     static registerClientPageLoaderCallback(clientPageLoaderCallback: PageLoaderCallback) {
         if (Utils.isClient()) {
             (window as any)._pageLoaderCallback = clientPageLoaderCallback;

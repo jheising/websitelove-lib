@@ -9,6 +9,7 @@ const toPath_1 = __importDefault(require("lodash/toPath"));
 const cloneDeep_1 = __importDefault(require("lodash/cloneDeep"));
 const isArray_1 = __importDefault(require("lodash/isArray"));
 const debounce_1 = __importDefault(require("lodash/debounce"));
+const SiteConfig_1 = require("../SiteConfig");
 function handleBindInputToStateOnChange(thisArg, statePath, newValue, onChange) {
     const newState = UIUtils.setValuesInStateProps(thisArg.state, [statePath, newValue]);
     thisArg.setState(newState, () => {
@@ -69,6 +70,9 @@ class UIUtils {
                 }
             }
         };
+    }
+    static requireFromCDN(relativeURL) {
+        return SiteConfig_1.SiteConfig.cdnBaseURL + relativeURL;
     }
 }
 exports.UIUtils = UIUtils;
