@@ -3,8 +3,10 @@ import React from "react";
 import {BrowserRouter as Router} from "react-router-dom";
 import {Utils} from "./Utils";
 import castArray from "lodash/castArray";
+import defaults from "lodash/defaults";
+import {SiteConfig, SiteConfigProps} from "./SiteConfig";
 
-export interface UserContextProps {
+export interface UIContextProps extends SiteConfigProps {
     currentUserID?: string;
     currentUsername?: string;
 }
@@ -15,7 +17,17 @@ export class SiteRenderer {
 
     static APPLICATION_SCRIPT_PATH = "/scripts/app.js";
     static DEFAULT_HEAD_CONTENT = [];
-    static USER_CONTEXT:React.Context<UserContextProps> = React.createContext<UserContextProps>({currentUserID: null, currentUsername: null});
+
+    static USER_CONTEXT: React.Context<UIContextProps> = React.createContext<UIContextProps>({
+        cdnBaseURL: null,
+        apiBaseURL: null,
+        currentUserID: null,
+        currentUsername: null
+    });
+
+    static requireFromCDN(relativeURL: string) {
+        return SiteConfig.cdnBaseURL + relativeURL;
+    }
 
     static registerClientPageLoaderCallback(clientPageLoaderCallback: PageLoaderCallback) {
         if (Utils.isClient()) {
@@ -30,12 +42,12 @@ export class SiteRenderer {
         pageComponentProps: object,
         req,
         res,
-        userContextProps?: UserContextProps,
+        uiContextProps?: UIContextProps,
         headContent: string | string[] = SiteRenderer.DEFAULT_HEAD_CONTENT
     ) {
 
         const pageComponentType = await serverPageLoaderCallback(pageName);
-        const pageContent = await SiteRenderer._serverSideRender(pageComponentType, pageComponentProps, req, res, userContextProps);
+        const pageContent = await SiteRenderer._serverSideRender(pageComponentType, pageComponentProps, req, res, uiContextProps);
 
         if (!pageContent) {
             // if page content is null, then it means we are doing a redirect.
@@ -56,7 +68,7 @@ if(window._initSite)
     window._initSite(
         "${pageName}", 
         ${JSON.stringify(pageComponentProps)},
-        ${JSON.stringify(userContextProps)}
+        ${JSON.stringify(uiContextProps)}
     );   
 }
 </script>
@@ -70,42 +82,46 @@ if(window._initSite)
 
     private static _createPageComponent(pageComponentType: React.ComponentClass,
                                         pageComponentProps: any,
-                                        userContextProps?: UserContextProps
-    ) {
+                                        uiContextProps: UIContextProps) {
+
+        const currentSiteConfig: SiteConfigProps = {
+            cdnBaseURL: uiContextProps.cdnBaseURL,
+            apiBaseURL: uiContextProps.apiBaseURL
+        };
+
+        Object.assign(SiteConfig, currentSiteConfig);
 
         let pageComponent = React.createElement(pageComponentType, pageComponentProps);
 
-        if (!userContextProps) {
-            return pageComponent;
-        }
-
-        return <SiteRenderer.USER_CONTEXT.Provider value={userContextProps}>
+        return <SiteRenderer.USER_CONTEXT.Provider value={uiContextProps}>
             {pageComponent}
         </SiteRenderer.USER_CONTEXT.Provider>;
     }
 
     private static async _clientSideRender(pageName: string,
                                            pageComponentProps: object,
-                                           userContextProps?: object) {
+                                           uiContextProps: UIContextProps) {
 
         const pageComponentType = await (window as any)._pageLoaderCallback(pageName);
 
         ReactDOM.hydrate(<Router>
-            {SiteRenderer._createPageComponent(pageComponentType, pageComponentProps, userContextProps)}
+            {SiteRenderer._createPageComponent(pageComponentType, pageComponentProps, uiContextProps)}
         </Router>, document.getElementById("root"));
     }
 
     private static async _serverSideRender(pageComponentType: React.ComponentClass,
                                            pageComponentProps: object,
                                            req: any, res: any,
-                                           userContextProps?: object): Promise<string> {
+                                           uiContextProps?: UIContextProps): Promise<string> {
+
+        uiContextProps = defaults({}, uiContextProps, SiteConfig);
 
         const ReactDOMServer = require("react-dom/server");
         const StaticRouter = require("react-router-dom").StaticRouter;
 
         const routerContext: any = {};
         let siteComponent = <StaticRouter location={req.originalUrl} context={routerContext}>
-            {SiteRenderer._createPageComponent(pageComponentType, pageComponentProps, userContextProps)}
+            {SiteRenderer._createPageComponent(pageComponentType, pageComponentProps, uiContextProps)}
         </StaticRouter>;
 
         // routerContext.url will contain the URL to redirect to if a <Redirect> was used

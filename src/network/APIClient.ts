@@ -3,6 +3,7 @@ import isNil from "lodash/isNil";
 import isObjectLike from "lodash/isObjectLike";
 import defaults from "lodash/defaults";
 import {Utils} from "../Utils";
+import {SiteConfig} from "../SiteConfig";
 
 let _fetch = Utils.isServer() ? require("node-fetch-polyfill") : (window as any).fetch;
 
@@ -14,8 +15,6 @@ export interface APIClientRequestOptions extends RequestInit {
 }
 
 export class APIClient {
-
-    static API_BASE_URL = "http://localhost:3001";
 
     static createFullURLWithQueryParams(urlString: string, queryParams: { [paramName: string]: any }): string {
         let url = new URL(urlString);
@@ -59,17 +58,24 @@ export class APIClient {
         }, requestOptions.timeoutInMS);
 
         let response;
-        let fullURL = APIClient.createFullURLWithQueryParams(APIClient.API_BASE_URL + endpoint, requestOptions.queryParams);
+        let fullURL = APIClient.createFullURLWithQueryParams(SiteConfig.apiBaseURL + endpoint, requestOptions.queryParams);
 
         try {
             response = await _fetch(fullURL, requestOptions);
         } catch (e) {
-            if (timedOut) return;
+
+            if (timedOut) {
+                return;
+            }
+
             clearTimeout(timeout);
             throw e;
         }
 
-        if (timedOut) return;
+        if (timedOut) {
+            return;
+        }
+
         clearTimeout(timeout);
 
         let responseData = await response.json();
