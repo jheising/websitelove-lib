@@ -35,6 +35,7 @@ class APIClient {
             cache: "no-store",
             apiBaseURL: SiteConfig_1.SiteConfig.apiBaseURL
         });
+        requestOptions.method = method;
         if (requestOptions.method !== "GET" && isObjectLike_1.default(requestOptions.body)) {
             requestOptions.headers["Content-Type"] = "application/json";
             requestOptions.body = JSON.stringify(requestOptions.body);

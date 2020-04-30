@@ -48,6 +48,8 @@ export class APIClient {
             apiBaseURL: SiteConfig.apiBaseURL
         });
 
+        requestOptions.method = method;
+
         if (requestOptions.method !== "GET" && isObjectLike(requestOptions.body)) {
             requestOptions.headers["Content-Type"] = "application/json";
             requestOptions.body = JSON.stringify(requestOptions.body);
