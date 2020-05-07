@@ -6,16 +6,23 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "deploy-aws-serverless": "./scripts/DeployAWSServerless.js"
+  },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/lodash": "^4.14.150",
     "@types/node": "^13.13.2",
     "@types/react": "^16.9.34",
-    "@types/react-dom": "^16.9.6"
+    "@types/react-dom": "^16.9.6",
+    "aws-sdk": "^2.672.0",
+    "node_modules-path": "^2.0.5",
+    "recursive-readdir": "^2.2.2"
   },
   "dependencies": {
     "lodash": "^4.17.15",
+    "nanoid": "^3.1.4",
     "node-fetch-polyfill": "^2.0.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

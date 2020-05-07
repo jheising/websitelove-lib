@@ -10,7 +10,7 @@ import {SiteConfig} from "../SiteConfig";
 export type PathAndValue = [string | string[], any];
 
 function handleBindInputToStateOnChange(thisArg: React.Component, statePath: string | string[], newValue: any, onChange?: (newValue, statePath: string | string[]) => void) {
-    const newState = UIUtils.setValuesInStateProps(thisArg.state, [statePath, newValue]);
+    const newState = UIUtils.setValuesInStateProps(thisArg.state, [[statePath, newValue]]);
     thisArg.setState(newState, () => {
         if (onChange) {
             onChange(newValue, statePath);
@@ -20,16 +20,11 @@ function handleBindInputToStateOnChange(thisArg: React.Component, statePath: str
 
 export class UIUtils {
 
-    static setValuesInStateProps<T = {}>(currentStateProps: T, pathsAndValues: PathAndValue | PathAndValue[]): Partial<T> {
-        let pathsAndValuesArray = pathsAndValues;
-
-        if (!isArray(pathsAndValues[0])) {
-            pathsAndValuesArray = [pathsAndValues as PathAndValue];
-        }
+    static setValuesInStateProps<T = {}>(currentStateProps: T, pathsAndValues: PathAndValue[]): Partial<T> {
 
         let newState: Partial<T> = {};
 
-        for (const pathAndValue of pathsAndValuesArray) {
+        for (const pathAndValue of pathsAndValues) {
             const path = pathAndValue[0];
             const value = pathAndValue[1];
 
@@ -43,10 +38,11 @@ export class UIUtils {
         return newState;
     }
 
-    static bindInputToState(thisArg: React.Component, statePath: string | string[],
+    static bindInputToState(thisArg: React.Component,
+                            statePath: string | string[],
                             onChange?: (newValue, statePath: string | string[]) => void,
                             debounceInMS: number = 0) {
-        let props: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> = {};
+        let props:any = {};
 
         if (debounceInMS > 0) {
             props.defaultValue = get(thisArg.state, statePath) || "";

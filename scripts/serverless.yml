@@ -1,0 +1,56 @@
+plugins:
+  - serverless-api-compression
+
+custom:
+  SERVICE_NAME: ${env:SERVICE_NAME}
+  STAGE: ${opt:stage, "dev"}
+  STAGE_HOST_PREFIX:
+    dev: "dev-"
+    prod: ""
+  REGION: ${opt:${env:AWS_REGION}, "us-west-2"}
+  STAGE_AND_SERVICE: ${self:custom.STAGE}-${self:custom.SERVICE_NAME}
+
+  NODE_ENV:
+    dev: development
+    prod: production
+    contentEncoding:
+      contentCompression: 100 # Minimum body size required for compression in bytes
+
+service: "${self:custom.SERVICE_NAME}-web"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${self:custom.STAGE}
+  region: ${self:custom.REGION}
+  apiName: ${self:custom.STAGE_AND_SERVICE}
+  profile: ${opt:profile}
+  memorySize: 512
+  timeout: 30
+  logRetentionInDays: 14
+  environment:
+    NODE_ENV: "${self:custom.NODE_ENV.${opt:stage, self:provider.stage}}"
+    ENCRYPTION_SECRET: "${ssm:/aws/reference/secretsmanager/${self:custom.STAGE}/${self:custom.SERVICE_NAME}/ENCRYPTION_SECRET~true}"
+    JWT_SECRET: "${ssm:/aws/reference/secretsmanager/${self:custom.STAGE}/${self:custom.SERVICE_NAME}/JWT_SECRET~true}"
+    CDN_BASE_URL: ${env:CDN_BASE_URL}
+
+package:
+  exclude:
+    - readme.md
+    - node_modules/@types/**
+    - .git
+    - .secrets*
+    - "*.ts"
+    - "*.tsx"
+    - "*.d.ts"
+    - "*.d.tsx"
+    - "*.js.map"
+    - cdn
+    - scripts
+
+functions:
+  api:
+    handler: "WebHandler.handler"
+    events:
+      - http: ANY /
+      - http: "ANY {proxy+}"
