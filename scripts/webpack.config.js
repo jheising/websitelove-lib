@@ -8,7 +8,7 @@ let uiVersion = require("./package.json").version;
 
 module.exports = (env, argv) => {
 
-    const CDN_PATH = argv.cdnBaseURL || process.env.CDN_BASE_URL || '/cdn/';
+    const CDN_PATH = argv.cdnBaseURL || process.env.CDN_BASE_URL || '/cdn';
 
     let config = {
         watchOptions: {
@@ -21,7 +21,7 @@ module.exports = (env, argv) => {
         output: {
             path: path.resolve(__dirname, "cdn", uiVersion),
             filename: `[name].js`,
-            publicPath: `${CDN_PATH}${uiVersion}/`
+            publicPath: `${CDN_PATH}/${uiVersion}/`
         },
         optimization: {
             runtimeChunk: false,

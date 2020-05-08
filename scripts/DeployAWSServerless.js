@@ -11,6 +11,7 @@ const chunk_1 = __importDefault(require("lodash/chunk"));
 const stream_1 = __importDefault(require("stream"));
 const path_1 = __importDefault(require("path"));
 const Utils_1 = require("../src/Utils");
+const mime_types_1 = __importDefault(require("mime-types"));
 const version = require(`${process.cwd()}/package.json`).version;
 let serviceName = process.env.SERVICE_NAME;
 let deployEnv = process.env.DEPLOY_ENV;
@@ -76,8 +77,15 @@ const buildAndDeployCDN = async () => {
             const s3 = new aws_sdk_1.default.S3();
             const writeStream = new stream_1.default.PassThrough();
             const s3KeyName = filename.replace(baseBuildDir, path_1.default.join(cdnBucketBase || "", version));
+            const mimeType = mime_types_1.default.lookup(filename);
             console.log(`Uploading '${s3KeyName}'...`);
-            const uploadPromise = s3.upload({ Bucket: cdnBucketName, ACL: "public-read", Key: s3KeyName, Body: writeStream }).promise();
+            const uploadPromise = s3.upload({
+                Bucket: cdnBucketName,
+                ACL: "public-read",
+                Key: s3KeyName,
+                Body: writeStream,
+                ContentType: mimeType || undefined
+            }).promise();
             const readStream = fs_1.default.createReadStream(filename);
             readStream.pipe(writeStream);
             return uploadPromise;
