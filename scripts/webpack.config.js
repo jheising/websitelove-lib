@@ -5,9 +5,10 @@ const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const TerserJSPlugin = require("terser-webpack-plugin");
 
 let uiVersion = require("./package.json").version;
-const CDN_PATH = process.env.CDN_PATH || '/cdn/';
 
 module.exports = (env, argv) => {
+
+    const CDN_PATH = argv.cdnBaseURL || process.env.CDN_BASE_URL || '/cdn/';
 
     let config = {
         watchOptions: {
