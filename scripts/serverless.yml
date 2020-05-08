@@ -39,6 +39,7 @@ package:
   exclude:
     - readme.md
     - node_modules/@types/**
+    - .*
     - .git
     - .secrets*
     - "*.ts"
