@@ -33,6 +33,7 @@ provider:
     ENCRYPTION_SECRET: "${ssm:/aws/reference/secretsmanager/${self:custom.STAGE}/${self:custom.SERVICE_NAME}/ENCRYPTION_SECRET~true}"
     JWT_SECRET: "${ssm:/aws/reference/secretsmanager/${self:custom.STAGE}/${self:custom.SERVICE_NAME}/JWT_SECRET~true}"
     CDN_BASE_URL: ${env:CDN_BASE_URL}
+    USE_LOCAL_CDN: false
 
 package:
   exclude:
